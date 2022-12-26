@@ -3,6 +3,9 @@
   <component name="AzureSettings">
     <option name="appInsights" value="rO0ABXVyAEtbTGNvbS5taWNyb3NvZnQuYXBwbGljYXRpb25pbnNpZ2h0cy5wcmVmZXJlbmNlLkFwcGxpY2F0aW9uSW5zaWdodHNSZXNvdXJjZTvCzxEP0C2HbAIAAHhwAAAAAA==" />
   </component>
+  <component name="FrameworkDetectionExcludesConfiguration">
+    <file type="web" url="file://$PROJECT_DIR$" />
+  </component>
   <component name="MavenProjectsManager">
     <option name="originalFiles">
       <list>
@@ -10,7 +13,10 @@
       </list>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_17" default="true" project-jdk-name="corretto-17" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/out" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="jpab" />
   </component>
 </project>
