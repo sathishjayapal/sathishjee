@@ -1,5 +1,5 @@
-FROM tomcat:9.0.1-jre8-alpine
+FROM tomcat:10.0-jdk17-openjdk-slim
 
-ADD *.war /usr/local/tomcat/webapps/webapp
+COPY target/*.war /usr/local/tomcat/webapps/sathishjee.war
 
 CMD ["catalina.sh", "run"]
