@@ -8,6 +8,14 @@
 <h1><%= "Hello World Sathish JSP!" %>
 </h1>
 <br/>
-<a href="hello">Hello Servlet</a>
+<form method="POST" action="upload" enctype="multipart/form-data" >
+    File:
+    <input type="file" name="file" id="file" /> <br/>
+    Destination:
+    <input type="text" value="/tmp" name="destination"/>
+    </br>
+    <input type="submit" value="Upload" name="upload" id="upload" />
+</form>
+
 </body>
 </html>
