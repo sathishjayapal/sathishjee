@@ -1,4 +1,4 @@
-package com.example.sathishjee;
+package me.sathish.utils;
 
 import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.BlobContainerClient;
@@ -6,33 +6,18 @@ import com.azure.storage.blob.BlobServiceClient;
 import com.azure.storage.blob.BlobServiceClientBuilder;
 import com.azure.storage.blob.models.BlobItem;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.MultipartConfig;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
 
-@WebServlet(name = "FileUploadServlet", urlPatterns = {"/upload"})
-@MultipartConfig
-public class FileUploadServlet extends HttpServlet {
-    private final static Logger LOGGER =
-            LoggerFactory.getLogger(FileUploadServlet.class.getCanonicalName());
+public class UploadAzureFilesUtil {
+    static final Logger LOGGER = LoggerFactory.getLogger(UploadAzureFilesUtil.class);
 
-    protected void doPost(HttpServletRequest request,
-                          HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        final String path = request.getParameter("destination");
-        final Part filePart = request.getPart("file");
-        final String fileName = getFileName(filePart);
+    public static void extracted(String path, Part filePart, String fileName, PrintWriter writer) throws IOException, ServletException {
         OutputStream out = null;
         InputStream filecontent = null;
-        final PrintWriter writer = response.getWriter();
         try {
             out = new FileOutputStream(new File(path + File.separator
                     + fileName));
@@ -42,20 +27,13 @@ public class FileUploadServlet extends HttpServlet {
             while ((read = filecontent.read(bytes)) != -1) {
                 out.write(bytes, 0, read);
             }
-            writer.println("<html><body>");
-            writer.println("<h1>" + "New file " + fileName + " created at " + path + " uploaded </h1>");
-            writer.println("</body></html>");
-            String SAS_TOKEN = System.getProperty("SAS_TOKEN");
-            String SAS_TOKEN1 = System.getenv("SAS_TOKEN");
+            String SAS_TOKEN = System.getProperty("SAS_TOKEN") == null ? System.getenv("SAS_TOKEN") : null;
             if (SAS_TOKEN == null) {
                 LOGGER.error("SAS Token not passed");
-            } else if (SAS_TOKEN1 == null) {
-                LOGGER.error("SAS1 Token not passed");
-
+                throw new ServletException("Cannot process without Authentication Token");
             } else {
-                System.out.println("The SAS token coming her is" +SAS_TOKEN1);
                 BlobServiceClient blobServiceClient = new BlobServiceClientBuilder()
-                        .endpoint("https://sathishresumestore.blob.core.windows.net")
+                        .endpoint("https://httpservletblogstore.blob.core.windows.net/httpservletblogstore")
                         .sasToken(SAS_TOKEN)
                         .buildClient();
                 BlobContainerClient blobContainerClient = blobServiceClient.getBlobContainerClient("helloazure");
@@ -64,18 +42,14 @@ public class FileUploadServlet extends HttpServlet {
                     System.out.println("\t" + blobItem.getName());
                 }
                 BlobClient blobClient = blobContainerClient.getBlobClient(fileName);
-                LOGGER.error("Going to file information to " + path + "/" + fileName);
+                LOGGER.debug("Going to file information to " + path + "/" + fileName);
                 blobClient.uploadFromFile(path + "/" + fileName);
-                LOGGER.error("After file information to " + path + "/" + fileName);
+                LOGGER.debug("After file information to " + path + "/" + fileName);
             }
         } catch (Exception fne) {
-            writer.println("You either did not specify a file to upload or are "
-                    + "trying to upload a file to a protected or nonexistent "
-                    + "location.");
-            writer.println("<br/> ERROR: " + fne.getMessage());
-
             LOGGER.error("Problems during file upload. Error: {0}",
-                    new Object[]{fne.getMessage()});
+                    fne.getMessage());
+            throw new ServletException("Upload failed \t" + fne.getMessage());
         } finally {
             if (out != null) {
                 out.close();
@@ -83,13 +57,10 @@ public class FileUploadServlet extends HttpServlet {
             if (filecontent != null) {
                 filecontent.close();
             }
-            if (writer != null) {
-                writer.close();
-            }
         }
     }
 
-    private String getFileName(final Part part) {
+    public static final String getFileName(final Part part) {
         final String partHeader = part.getHeader("content-disposition");
         LOGGER.error("Part Header = {0}", partHeader);
         for (String content : part.getHeader("content-disposition").split(";")) {

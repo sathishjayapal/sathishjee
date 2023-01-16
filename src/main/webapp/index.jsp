@@ -5,16 +5,16 @@
     <title>JSP - Hello World</title>
 </head>
 <body>
-<h1><%= "Hello World Sathish JSP!" %>
+<h1><%= "Sync file upload !" %>
 </h1>
 <br/>
-<form method="POST" action="upload" enctype="multipart/form-data" >
+<form method="POST" action="upload" enctype="multipart/form-data">
     File:
-    <input type="file" name="file" id="file" /> <br/>
+    <input type="file" name="file" id="file"/> <br/>
     Destination:
     <input type="text" value="/tmp" name="destination"/>
     </br>
-    <input type="submit" value="Upload" name="upload" id="upload" />
+    <input type="submit" value="Upload" name="upload" id="upload"/>
 </form>
 
 </body>
